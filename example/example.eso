@@ -1,0 +1,30 @@
+push 24       ; pushes 24 * 3 (72) to the stack.
+dup           ; duplicates 72 on the stack
+add 9         ; pops 72, adds 9 * 3 (27) to it, pushes the result (99) onto the stack.
+one           ; pops 99, adds 1 to it, and pushes the result (100) onto the stack.
+one           ; pops 100, adds 1 to it, and pushes the result (101) onto the stack.
+dup           ; duplicates 101 on the stack
+add 2         ; pops 101, adds 2 * 3 (6) to it, pushes the result (107) onto the stack.
+one           ; pops 107, adds 1 to it, and pushes the result (108) onto the stack.
+dup dup       ; duplicates 108 on the stack twice
+add 1         ; pops 108, adds 1 * 3 (3) to it, pushes the result (111) onto the stack.
+reverse       ; reverses the order of the stack
+while stack { ; while the stack's length isn't 0
+print         ; pops and prints the value on the stack
+}
+
+
+; more compact
+]24    ; pushes 72
+.      ; duplicates 72
++9     ; adds 27
+//     ; adds 1 (twice)
+.      ; duplicates 101 on the stack
++2     ; adds 6
+/      ; adds 1
+..     ; duplicates twice
++1     ; adds 3
+^      ; reverses the stack
+~ # {*} ; while the stack's length isn't 0, print
+
+]24.+9//.+2/..+1^~#{*}
