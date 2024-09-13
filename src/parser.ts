@@ -29,8 +29,10 @@ export class Parser {
                     const value = Number(next.value);
                     this.addToken(TokenType.ADD, `${value * 3}`);
                     this.advance();
-                } else if (next.type !== TokenType.STACK_LENGTH) {
-                    error("no number after add!");
+                } else if (next.type === TokenType.STACK_LENGTH || next.type === TokenType.POP) {
+                    this.addToken(TokenType.ADD);
+                } else {
+                    error("no number given to add!");
                 }
             }
             break;
@@ -41,8 +43,10 @@ export class Parser {
                     const value = Number(next.value);
                     this.addToken(TokenType.ADD, `${value * -3}`);
                     this.advance();
-                } else if (next.type === TokenType.STACK_LENGTH) {
+                } else if (next.type === TokenType.STACK_LENGTH || next.type === TokenType.POP) {
                     this.addToken(TokenType.SUB);
+                } else {
+                    error("no number given to subtract!");
                 }
             }
             break;
@@ -50,6 +54,20 @@ export class Parser {
             case TokenType.ONE:
                 this.addToken(TokenType.ADD, "1");
                 break;
+
+            case TokenType.PUSH: {
+                const next = this.peek();
+                if (next.type === TokenType.NUMBER) {
+                    const value = Number(next.value);
+                    this.addToken(TokenType.PUSH, `${value * 3}`);
+                    this.advance();
+                } else if (next.type === TokenType.STACK_LENGTH) {
+                    this.addToken(TokenType.PUSH);
+                } else {
+                    error("no number given to push!");
+                }
+            }
+            break;
            
             default:
                 this.addToken(token.type, token.value);

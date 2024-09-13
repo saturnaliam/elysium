@@ -27,10 +27,9 @@ export class Interpreter {
                     break;
 
                 case TokenType.PUSH:
-                    if (this.peek().type == TokenType.NUMBER) {
-                        const num = this.advance();
-                        this.stack.push(Number(num.value) * 3);
-                    } else if (this.peek().type == TokenType.STACK_LENGTH) {
+                    if (token.value !== "") {
+                        this.stack.push(Number(token.value));
+                    } else if (this.peek().type === TokenType.STACK_LENGTH) {
                         const num = this.stack.length;
                         this.stack.push(num);
                     }
@@ -44,6 +43,10 @@ export class Interpreter {
                         const value = Number(this.stack.length);
                         this.stack.add(value);
                         this.advance();
+                    } else {
+                        // this MUST mean a value popped is being added
+                        const value = this.stack.pop();
+                        this.stack.add(value);
                     }
                     break;
 
@@ -52,6 +55,10 @@ export class Interpreter {
                         const value = Number(this.stack.length);
                         this.stack.add(value * -1);
                         this.advance();
+                    } else {
+                        // this MUST mean a value popped is being added
+                        const value = this.stack.pop();
+                        this.stack.add(value * -1);
                     }
                     break;
 

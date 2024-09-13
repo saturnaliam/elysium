@@ -1,0 +1,39 @@
+push 24
+dup
+add 9
+one one
+dup
+add 2
+one
+dup dup
+add 1
+dup
+sub 23
+one one
+dup
+sub 4
+dup
+add 18
+one
+dup
+add 8
+dup
+add 1
+dup
+sub 2
+dup
+sub 3
+one
+reverse
+print
+print
+print
+print
+print
+print
+print
+print
+print
+print
+print
+print
