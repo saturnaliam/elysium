@@ -67,7 +67,8 @@ export class Interpreter {
                     break;
 
                 case TokenType.WHILE:
-                    throw "WHILE is unimplemented.";
+                    this.while();
+                    break;
 
                 case TokenType.DUP:
                     this.stack.duplicate();
@@ -77,8 +78,6 @@ export class Interpreter {
                     this.stack.print();
                     break;
 
-                case TokenType.IF:
-                    throw "IF is unimplemented.";
                 
                 default: break;
             }
@@ -99,5 +98,69 @@ export class Interpreter {
 
     private advance(): Token {
         return this.tokens.at(this.current++) ?? new Token(TokenType.EOF);
+    }
+
+    // rly bad
+    private while() {
+        let condition = (): boolean => { return false };
+        
+        if (this.peek().type === TokenType.STACK) {
+            condition = (): boolean => !this.stack.isEmpty;
+            this.advance();
+        } else {
+            // while stacklength <op> y
+            if (this.peek().type === TokenType.STACK_LENGTH) this.advance();
+            const next = this.peek();
+            const rh = Number(next.value);
+            switch (next.type) {
+                case TokenType.GREATER:
+                    condition = (): boolean => this.stack.length > rh;
+                    break;
+                case TokenType.GREATER_EQUAL:
+                    condition = (): boolean => this.stack.length >= rh;
+                    break
+                case TokenType.LESS:
+                    condition = (): boolean => this.stack.length < rh;
+                    break
+                case TokenType.LESS_EQUAL:
+                    condition = (): boolean => this.stack.length <= rh;
+                    break;
+                case TokenType.EQUAL:
+                    condition = (): boolean => this.stack.length === rh;
+                    break;
+                case TokenType.BANG:
+                    condition = (): boolean => this.stack.length !== rh;
+                    break;
+                default:
+                    error("no comparison given!");
+                }
+                this.advance();
+            }
+            
+            const while_index = this.current;
+            let paren_depth = 0;
+            while (condition()) {
+                const next = this.peek();
+                
+            switch (next.type) {
+                case TokenType.L_CURLY:
+                    paren_depth++;
+                    this.advance();
+                    break;
+
+                case TokenType.R_CURLY:
+                    paren_depth--;
+                    this.advance();
+                    break;
+            
+                default:
+                    this.interpret_token();
+                    break;
+            }
+
+            if (paren_depth === 0) {
+                this.current = while_index;
+            }
+        }
     }
 }

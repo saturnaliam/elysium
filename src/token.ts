@@ -5,12 +5,11 @@ export enum TokenType {
     WHILE,        DUP,           // ~ .
     STACK,        PRINT,         // # *
     L_CURLY,      R_CURLY,       // { }
-    LEAVE,        IF,            // _ %
-    GREATER,      GREATER_EQUAL, // > >=
-    LESS,         LESS_EQUAL,    // < <=
-    EQUAL,        BANG_EQUAL,    // = !=
     STACK_LENGTH, NUMBER,        // $
-    BANG, EOF                    // !
+    EQUAL,        BANG,          // = !
+    GREATER,      GREATER_EQUAL,  // > >=
+    LESS,         LESS_EQUAL,    // < <=
+    EOF
 };
 
 export class Token {
@@ -28,14 +27,12 @@ export class Token {
 }
 
 export const keywords: Record<string, TokenType> = {
-    "if":      TokenType.IF,
     "add":     TokenType.ADD,
     "dup":     TokenType.DUP,
     "one":     TokenType.ONE,
     "pop":     TokenType.POP,
     "sub":     TokenType.SUB,
     "push":    TokenType.PUSH,
-    "leave":   TokenType.LEAVE,
     "print":   TokenType.PRINT,
     "stack":   TokenType.STACK,
     "while":   TokenType.WHILE,

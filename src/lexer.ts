@@ -37,14 +37,8 @@ export class Lexer {
             case '*': this.addToken(TokenType.PRINT);        break;
             case '{': this.addToken(TokenType.L_CURLY);      break;
             case '}': this.addToken(TokenType.R_CURLY);      break;
-            case '_': this.addToken(TokenType.LEAVE);        break;
-            case '%': this.addToken(TokenType.IF);           break;
             case '=': this.addToken(TokenType.EQUAL);        break;
             case '$': this.addToken(TokenType.STACK_LENGTH); break;
-
-            case '!':
-                this.addToken((this.match('=')) ? TokenType.BANG_EQUAL : TokenType.BANG);
-                break;
 
             case '<':
                 this.addToken((this.match('=')) ? TokenType.LESS_EQUAL : TokenType.LESS);
@@ -92,20 +86,9 @@ export class Lexer {
         return this.src.at(this.current) ?? "\0";
     }
 
-    private peekNext(): string {
-        if (this.current + 1 >= this.src.length) return "\0";
-        return this.src.at(this.current + 1) ?? "\0";
-    }
-
     // number / ident
     private number() {
         while (this.isDigit(this.peek())) this.advance();
-
-        if (this.peek() == '.' && this.isDigit(this.peekNext())) {
-            this.advance();
-
-            while (this.isDigit(this.peek())) this.advance();
-        }
 
         const value = this.src.substring(this.start, this.current);
         this.addToken(TokenType.NUMBER, value);

@@ -68,6 +68,23 @@ export class Parser {
                 }
             }
             break;
+
+            case TokenType.GREATER:
+            case TokenType.GREATER_EQUAL:
+            case TokenType.LESS:
+            case TokenType.LESS_EQUAL:
+            case TokenType.EQUAL:
+            case TokenType.BANG: {
+                const next = this.peek();
+                if (next.type === TokenType.NUMBER) {
+                    const value = Number(next.value);
+                    this.addToken(token.type, `${value}`);
+                    this.advance();
+                } else {
+                    error("no number given to comparison.");
+                }
+            }
+            break;
            
             default:
                 this.addToken(token.type, token.value);
