@@ -1,5 +1,6 @@
 import { Stack } from "./stack.ts";
 import { Token, TokenType } from "./token.ts"
+import { error } from "./util.ts";
 
 export class Interpreter {
     private readonly tokens: Token[];
@@ -19,74 +20,69 @@ export class Interpreter {
     private interpret_token() {
         const token = this.advance();
 
-        switch (token.type) {
-            case TokenType.POP: 
-                try {
+        try {
+            switch (token.type) {
+                case TokenType.POP:
                     this.stack.pop();
-                } catch (e) {
-                    console.error(e);
-                    Deno.exit(1);
-                }
-                break;
+                    break;
 
-            case TokenType.PUSH:
-                if (this.peek().type == TokenType.NUMBER) {
-                    const num = this.advance();
-                    this.stack.push(Number(num.value) * 3);
-                }
-                break;
+                case TokenType.PUSH:
+                    if (this.peek().type == TokenType.NUMBER) {
+                        const num = this.advance();
+                        this.stack.push(Number(num.value) * 3);
+                    } else if (this.peek().type == TokenType.STACK_LENGTH) {
+                        const num = this.stack.length;
+                        this.stack.push(num);
+                    }
+                    break;
 
-            case TokenType.ADD:
-                if (this.peek().type == TokenType.NUMBER) {
-                    const num = this.advance();
-                    this.stack.add(Number(num.value) * 3);
-                }
-                break;
+                case TokenType.ADD:
+                    if (token.value !== "") {
+                        const value = Number(token.value);
+                        this.stack.add(value);
+                    } else if (this.peek().type === TokenType.STACK_LENGTH) {
+                        const value = Number(this.stack.length);
+                        this.stack.add(value);
+                        this.advance();
+                    }
+                    break;
 
-            case TokenType.SUB:
-                if (this.peek().type == TokenType.NUMBER) {
-                    const num = this.advance();
-                    this.stack.add(Number(num.value) * -3);
-                }
-                break;
+                case TokenType.SUB:
+                    if (this.peek().type === TokenType.STACK_LENGTH) {
+                        const value = Number(this.stack.length);
+                        this.stack.add(value * -1);
+                        this.advance();
+                    }
+                    break;
 
-            case TokenType.ONE:
-                this.stack.add(1);
-                break;
+                case TokenType.REVERSE:
+                    this.stack.reverse();
+                    break;
 
-            case TokenType.REVERSE:
-                this.stack.reverse();
-                break;
+                case TokenType.WHILE:
+                    throw "WHILE is unimplemented.";
 
-            case TokenType.WHILE:
-                break;
-            case TokenType.DUP:
-                try {
+                case TokenType.DUP:
                     this.stack.duplicate();
-                } catch (e) {
-                    console.error(e);
-                    Deno.exit(1);
-                }
-                break;
+                    break;
 
-            case TokenType.PRINT:
-                try {
+                case TokenType.PRINT:
                     this.stack.print();
-                } catch (e) {
-                    console.error(e);
-                    Deno.exit(1);
-                }
-                break;
+                    break;
 
-            case TokenType.IF:
-                break;
-
-            default: break;
+                case TokenType.IF:
+                    throw "IF is unimplemented.";
+                
+                default: break;
+            }
+        } catch (e) {
+            error(e);
         }
     }
 
     private atEnd(): boolean {
-        return this.tokens[this.current].type == TokenType.EOF;
+        const current = this.tokens[this.current] ?? new Token(TokenType.EOF);
+        return current.type === TokenType.EOF || this.current >= this.tokens.length;
     }
 
     private peek(): Token {
