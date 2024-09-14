@@ -50,7 +50,7 @@ export class Stack {
         return this.stack.length;
     }
 
-    get isEmpty(): boolean {
+    get is_empty(): boolean {
         return this.stack.length === 0;
     }
 }

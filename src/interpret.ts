@@ -12,7 +12,7 @@ export class Interpreter {
     }
 
     public async interpret() {
-        while (!this.atEnd()) {
+        while (!this.at_end()) {
             await this.interpret_token();
         }
     }
@@ -89,7 +89,7 @@ export class Interpreter {
         }
     }
 
-    private atEnd(): boolean {
+    private at_end(): boolean {
         return this.peek().type === TokenType.EOF || this.current >= this.tokens.length;
     }
 
@@ -106,7 +106,7 @@ export class Interpreter {
         let condition = (): boolean => { return false };
         
         if (this.peek().type === TokenType.STACK) {
-            condition = (): boolean => !this.stack.isEmpty;
+            condition = (): boolean => !this.stack.is_empty;
             this.advance();
         } else {
             // handling comparison between stack length & a value

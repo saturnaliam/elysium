@@ -6,51 +6,51 @@ export class Lexer {
     private current = 0;
     private start = 0;
 
-    constructor(sourceCode: string) {
-        this.src = sourceCode;
+    constructor(source_code: string) {
+        this.src = source_code;
     }
 
     public lex(): Token[] {
-        while (!this.atEnd()) {
-            this.lexToken();
+        while (!this.at_end()) {
+            this.lex_token();
         }
 
-        this.addToken(TokenType.EOF);
+        this.add_token(TokenType.EOF);
     
         return this.tokens;
     }
 
-    private lexToken() {
+    private lex_token() {
         this.start = this.current;
         const c = this.advance();
 
         switch (c) {
-            case ']': this.addToken(TokenType.PUSH);         break;
-            case '[': this.addToken(TokenType.POP);          break;
-            case '+': this.addToken(TokenType.ADD);          break;
-            case '-': this.addToken(TokenType.SUB);          break;
-            case '/': this.addToken(TokenType.ONE);          break;
-            case '^': this.addToken(TokenType.REVERSE);      break;
-            case '~': this.addToken(TokenType.WHILE);        break;
-            case '.': this.addToken(TokenType.DUP);          break;
-            case '#': this.addToken(TokenType.STACK);        break;
-            case '*': this.addToken(TokenType.PRINT);        break;
-            case '{': this.addToken(TokenType.L_CURLY);      break;
-            case '}': this.addToken(TokenType.R_CURLY);      break;
-            case '=': this.addToken(TokenType.EQUAL);        break;
-            case '$': this.addToken(TokenType.STACK_LENGTH); break;
-            case '@': this.addToken(TokenType.INPUT);        break;
+            case ']': this.add_token(TokenType.PUSH);         break;
+            case '[': this.add_token(TokenType.POP);          break;
+            case '+': this.add_token(TokenType.ADD);          break;
+            case '-': this.add_token(TokenType.SUB);          break;
+            case '/': this.add_token(TokenType.ONE);          break;
+            case '^': this.add_token(TokenType.REVERSE);      break;
+            case '~': this.add_token(TokenType.WHILE);        break;
+            case '.': this.add_token(TokenType.DUP);          break;
+            case '#': this.add_token(TokenType.STACK);        break;
+            case '*': this.add_token(TokenType.PRINT);        break;
+            case '{': this.add_token(TokenType.L_CURLY);      break;
+            case '}': this.add_token(TokenType.R_CURLY);      break;
+            case '=': this.add_token(TokenType.EQUAL);        break;
+            case '$': this.add_token(TokenType.STACK_LENGTH); break;
+            case '@': this.add_token(TokenType.INPUT);        break;
 
             case '<':
-                this.addToken((this.match('=')) ? TokenType.LESS_EQUAL : TokenType.LESS);
+                this.add_token((this.match('=')) ? TokenType.LESS_EQUAL : TokenType.LESS);
                 break;
 
             case '>':
-                this.addToken((this.match('=')) ? TokenType.GREATER_EQUAL : TokenType.GREATER);
+                this.add_token((this.match('=')) ? TokenType.GREATER_EQUAL : TokenType.GREATER);
                 break;
 
             case ';':
-                while (this.peek() != "\n" && !this.atEnd()) this.advance();
+                while (this.peek() != "\n" && !this.at_end()) this.advance();
                 break;
             
             case '\r':
@@ -60,9 +60,9 @@ export class Lexer {
                 break;
 
             default:
-                if (this.isDigit(c)) {
+                if (this.is_digit(c)) {
                     this.number();
-                } else if (this.isAlpha(c)) {
+                } else if (this.is_alpha(c)) {
                     this.identifier();
                 }
                 break;
@@ -75,7 +75,7 @@ export class Lexer {
     }
 
     private match(expected: string): boolean {
-        if (this.atEnd()) return false;
+        if (this.at_end()) return false;
         if (this.src.at(this.current) != expected) return false;
 
         this.current++;
@@ -83,20 +83,20 @@ export class Lexer {
     }
 
     private peek(): string {
-        if (this.atEnd()) return "\0";
+        if (this.at_end()) return "\0";
         return this.src.at(this.current) ?? "\0";
     }
 
     // number / ident
     private number() {
-        while (this.isDigit(this.peek())) this.advance();
+        while (this.is_digit(this.peek())) this.advance();
 
         const value = this.src.substring(this.start, this.current);
-        this.addToken(TokenType.NUMBER, value);
+        this.add_token(TokenType.NUMBER, value);
     }
 
     private identifier() {
-        while (this.isAlphanum(this.peek())) this.advance();
+        while (this.is_alpha_num(this.peek())) this.advance();
 
         const text = this.src.substring(this.start, this.current);
         const type = keywords[text];
@@ -105,23 +105,23 @@ export class Lexer {
             console.error("ERROR: invalid keyword");
             Deno.exit(1);
         }
-        this.addToken(type);
+        this.add_token(type);
     }
 
     // adding tokens
-    private addToken(type: TokenType, value = "") {
+    private add_token(type: TokenType, value = "") {
         this.tokens.push(new Token(type, value));
     }
 
     // basic utilities
-    private atEnd(): boolean { return this.current >= this.src.length; }
+    private at_end(): boolean { return this.current >= this.src.length; }
     
-    private isDigit(input: string): boolean { return /[0-9]/.test(input); }
+    private is_digit(input: string): boolean { return /[0-9]/.test(input); }
 
-    private isAlpha(input: string): boolean { return /[a-zA-Z_]/.test(input); }
+    private is_alpha(input: string): boolean { return /[a-zA-Z_]/.test(input); }
 
-    private isAlphanum(input: string): boolean {
-        return this.isAlpha(input) || this.isDigit(input);
+    private is_alpha_num(input: string): boolean {
+        return this.is_alpha(input) || this.is_digit(input);
     }
 };
 

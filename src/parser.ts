@@ -12,14 +12,14 @@ export class Parser {
     }
 
     public parse(): Token[] {
-        while (!this.atEnd()) {
-            this.parseToken();
+        while (!this.at_end()) {
+            this.parse_token();
         }
 
         return this.tokens;
     }
 
-    private parseToken() {
+    private parse_token() {
         const token = this.advance();
 
         switch (token.type) {
@@ -27,10 +27,10 @@ export class Parser {
                 const next = this.peek();
                 if (next.type === TokenType.NUMBER) {
                     const value = Number(next.value);
-                    this.addToken(TokenType.ADD, `${value * 3}`);
+                    this.add_token(TokenType.ADD, `${value * 3}`);
                     this.advance();
                 } else if (next.type === TokenType.STACK_LENGTH || next.type === TokenType.POP) {
-                    this.addToken(TokenType.ADD);
+                    this.add_token(TokenType.ADD);
                 } else {
                     error("no number given to add!");
                 }
@@ -41,10 +41,10 @@ export class Parser {
                 const next = this.peek();
                 if (next.type === TokenType.NUMBER) {
                     const value = Number(next.value);
-                    this.addToken(TokenType.ADD, `${value * -3}`);
+                    this.add_token(TokenType.ADD, `${value * -3}`);
                     this.advance();
                 } else if (next.type === TokenType.STACK_LENGTH || next.type === TokenType.POP) {
-                    this.addToken(TokenType.SUB);
+                    this.add_token(TokenType.SUB);
                 } else {
                     error("no number given to subtract!");
                 }
@@ -52,17 +52,17 @@ export class Parser {
             break;
 
             case TokenType.ONE:
-                this.addToken(TokenType.ADD, "1");
+                this.add_token(TokenType.ADD, "1");
                 break;
 
             case TokenType.PUSH: {
                 const next = this.peek();
                 if (next.type === TokenType.NUMBER) {
                     const value = Number(next.value);
-                    this.addToken(TokenType.PUSH, `${value * 3}`);
+                    this.add_token(TokenType.PUSH, `${value * 3}`);
                     this.advance();
                 } else if (next.type === TokenType.STACK_LENGTH) {
-                    this.addToken(TokenType.PUSH);
+                    this.add_token(TokenType.PUSH);
                 } else {
                     error("no number given to push!");
                 }
@@ -78,7 +78,7 @@ export class Parser {
                 const next = this.peek();
                 if (next.type === TokenType.NUMBER) {
                     const value = Number(next.value);
-                    this.addToken(token.type, `${value}`);
+                    this.add_token(token.type, `${value}`);
                     this.advance();
                 } else {
                     error("no number given for comparison.");
@@ -87,11 +87,11 @@ export class Parser {
             break;
            
             default:
-                this.addToken(token.type, token.value);
+                this.add_token(token.type, token.value);
         }
     }
 
-    private addToken(type: TokenType, value = "") {
+    private add_token(type: TokenType, value = "") {
         this.tokens.push(new Token(type, value));
     }
 
@@ -103,7 +103,7 @@ export class Parser {
         return this.input.at(this.current) ?? new Token(TokenType.EOF);
     }
 
-    private atEnd(): boolean {
+    private at_end(): boolean {
         return (this.input[this.current].type === TokenType.EOF) || this.current >= this.input.length;
     }
 }
