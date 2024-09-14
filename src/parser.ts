@@ -81,7 +81,7 @@ export class Parser {
                     this.addToken(token.type, `${value}`);
                     this.advance();
                 } else {
-                    error("no number given to comparison.");
+                    error("no number given for comparison.");
                 }
             }
             break;

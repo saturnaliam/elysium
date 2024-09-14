@@ -1,10 +1,17 @@
 import { Interpreter } from "./interpret.ts";
 import { Lexer } from "./lexer.ts";
 import { Parser } from "./parser.ts";
+import { error } from "./util.ts";
 
-//const lexer = new Lexer("]24.+9//.+2/..+1^*****");
-const lexer = new Lexer("]24.+9//.+2/..+1.-23//.-4.+18/.+8.+1.-2.-3/^~$>0{*}");
-const tokens = lexer.lex();
-const parser = new Parser(tokens);
-const interpreter = new Interpreter(parser.parse());
-interpreter.interpret();
+const args = Deno.args;
+
+if (args.length !== 1) {
+    error("usage: elysium <path>");
+}
+
+const contents = await Deno.readTextFile(args[0])
+    .catch((e) => error(e));
+
+const lexer = new Lexer(contents ?? "");
+const parser = new Parser(lexer.lex());
+new Interpreter(parser.parse()).interpret();

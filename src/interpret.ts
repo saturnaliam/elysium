@@ -87,12 +87,10 @@ export class Interpreter {
     }
 
     private atEnd(): boolean {
-        const current = this.tokens[this.current] ?? new Token(TokenType.EOF);
-        return current.type === TokenType.EOF || this.current >= this.tokens.length;
+        return this.peek().type === TokenType.EOF || this.current >= this.tokens.length;
     }
 
     private peek(): Token {
-        if (this.atEnd()) return new Token(TokenType.EOF);
         return this.tokens.at(this.current) ?? new Token(TokenType.EOF);
     }
 
@@ -108,11 +106,16 @@ export class Interpreter {
             condition = (): boolean => !this.stack.isEmpty;
             this.advance();
         } else {
-            // while stacklength <op> y
+            // handling comparison between stack length & a value
+
+            // removing stack length from the comparison, bc its optional
             if (this.peek().type === TokenType.STACK_LENGTH) this.advance();
-            const next = this.peek();
-            const rh = Number(next.value);
-            switch (next.type) {
+
+            // getting the comparison operator & the value to compare against
+            const operator = this.peek();
+            const rh = Number(operator.value);
+            
+            switch (operator.type) {
                 case TokenType.GREATER:
                     condition = (): boolean => this.stack.length > rh;
                     break;
@@ -134,6 +137,7 @@ export class Interpreter {
                 default:
                     error("no comparison given!");
                 }
+
                 this.advance();
             }
             
@@ -142,25 +146,26 @@ export class Interpreter {
             while (condition()) {
                 const next = this.peek();
                 
-            switch (next.type) {
-                case TokenType.L_CURLY:
-                    paren_depth++;
-                    this.advance();
-                    break;
+                // handling opening / closing curly braces, or handing off the token to be interpreted.
+                switch (next.type) {
+                    case TokenType.L_CURLY:
+                        paren_depth++;
+                        this.advance();
+                        break;
 
-                case TokenType.R_CURLY:
-                    paren_depth--;
-                    this.advance();
-                    break;
-            
-                default:
-                    this.interpret_token();
-                    break;
-            }
+                    case TokenType.R_CURLY:
+                        paren_depth--;
+                        this.advance();
+                        break;
+                
+                    default:
+                        this.interpret_token();
+                        break;
+                }
 
-            if (paren_depth === 0) {
-                this.current = while_index;
-            }
+                if (paren_depth === 0) {
+                    this.current = while_index;
+                }
         }
     }
 }
