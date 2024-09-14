@@ -2,6 +2,8 @@ export class Stack {
     private stack: number[] = [];
 
     public push(input: number) {
+        // the stack MUST be empty to be pushed to :3 otherwise it's lame
+        if (this.length !== 0) throw "the stack must be empty to be pushed!"
         this.stack.push(input);
     }
 
@@ -17,7 +19,7 @@ export class Stack {
         try {
             let last_val = this.pop();
             last_val += input;
-            this.push(last_val);
+            this.stack.push(last_val);
         } catch (e) {
             throw e;
         }
@@ -28,7 +30,7 @@ export class Stack {
 
         if (value === undefined) throw "stack empty :(";
 
-        this.push(value);
+        this.stack.push(value);
     }
 
     public print() {

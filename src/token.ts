@@ -7,9 +7,9 @@ export enum TokenType {
     L_CURLY,      R_CURLY,       // { }
     STACK_LENGTH, NUMBER,        // $
     EQUAL,        BANG,          // = !
-    GREATER,      GREATER_EQUAL,  // > >=
+    GREATER,      GREATER_EQUAL, // > >=
     LESS,         LESS_EQUAL,    // < <=
-    EOF
+    INPUT,        EOF            // @
 };
 
 export class Token {
@@ -33,6 +33,7 @@ export const keywords: Record<string, TokenType> = {
     "pop":     TokenType.POP,
     "sub":     TokenType.SUB,
     "push":    TokenType.PUSH,
+    "input":   TokenType.INPUT,
     "print":   TokenType.PRINT,
     "stack":   TokenType.STACK,
     "while":   TokenType.WHILE,

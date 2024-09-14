@@ -39,6 +39,7 @@ export class Lexer {
             case '}': this.addToken(TokenType.R_CURLY);      break;
             case '=': this.addToken(TokenType.EQUAL);        break;
             case '$': this.addToken(TokenType.STACK_LENGTH); break;
+            case '@': this.addToken(TokenType.INPUT);        break;
 
             case '<':
                 this.addToken((this.match('=')) ? TokenType.LESS_EQUAL : TokenType.LESS);

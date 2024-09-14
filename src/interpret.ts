@@ -11,13 +11,13 @@ export class Interpreter {
         this.tokens = tokens;
     }
 
-    public interpret() {
+    public async interpret() {
         while (!this.atEnd()) {
-            this.interpret_token();
+            await this.interpret_token();
         }
     }
 
-    private interpret_token() {
+    private async interpret_token() {
         const token = this.advance();
 
         try {
@@ -78,6 +78,9 @@ export class Interpreter {
                     this.stack.print();
                     break;
 
+                case TokenType.INPUT:
+                    await this.input();
+                    break;
                 
                 default: break;
             }
@@ -167,5 +170,26 @@ export class Interpreter {
                     this.current = while_index;
                 }
         }
+    }
+
+    private async input() {
+        // https://stackoverflow.com/a/77718952
+        Deno.stdin.setRaw(true);
+
+        let chunk = new Uint8Array(0);
+        const reader = Deno.stdin.readable.getReader();
+        
+        if (chunk.length === 0) {
+            const readResult = await reader.read();
+            if (readResult.done) return;
+            chunk = readResult.value;
+        }
+
+        const key = chunk[0];
+        chunk = chunk.slice(1);
+        if (key === 3) Deno.exit(1);
+
+        this.stack.push(key);
+        Deno.stdin.setRaw(false);
     }
 }
